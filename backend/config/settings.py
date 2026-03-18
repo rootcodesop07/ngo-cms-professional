@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.cms',
     'apps.donations',
+    'apps.ngo.apps.NgoConfig',
 ]
 
 MIDDLEWARE = [
