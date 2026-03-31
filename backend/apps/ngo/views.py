@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated # type: ignore
 from .models import NGO
 from .serializers import NGOSerializer
 
-class NGOCreateView(APIView):
+class NGOCreateView(APIView): # Day 8: List & Detail APIs implemented
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
