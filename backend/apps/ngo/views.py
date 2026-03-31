@@ -20,7 +20,7 @@ class NGOCreateView(APIView): # Day 8: List & Detail APIs implemented
         return Response(serializer.errors)
     
 
-class NGOListView(APIView):
+class NGOListView(APIView): # Day 9: Update & Delete APIs implemented
      permission_classes = [IsAuthenticated]
 
      def get(self, request):
