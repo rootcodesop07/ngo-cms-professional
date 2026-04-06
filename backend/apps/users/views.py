@@ -1,42 +1,28 @@
-from rest_framework import generics
-from rest_framework.views import APIView
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-
-from .models import User
-from .serializers import UserRegisterSerializer, LoginSerializer
-from .permissions import IsAdminUserRole
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
-# =========================
-# REGISTER VIEW
-# =========================
-class RegisterUserView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserRegisterSerializer
+@api_view(['POST'])
+@permission_classes([AllowAny])  # 🔥 VERY IMPORTANT
+def login_view(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
 
+    user = authenticate(username=username, password=password)
 
-# =========================
-# LOGIN VIEW
-# =========================
-class LoginView(APIView):
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
+    if user is None:
+        return Response(
+            {"error": "Invalid credentials"},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
 
-        if serializer.is_valid():
-            return Response(serializer.validated_data)
+    refresh = RefreshToken.for_user(user)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# =========================
-# ADMIN ONLY VIEW
-# =========================
-class AdminOnlyView(APIView):
-    permission_classes = [IsAuthenticated, IsAdminUserRole]
-
-    def get(self, request):
-        return Response({
-            "message": "Hello Admin! You have access."
-        })
+    return Response({
+        "access": str(refresh.access_token),
+        "refresh": str(refresh)
+    })

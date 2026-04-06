@@ -1,77 +1,38 @@
-from rest_framework.views import APIView # type: ignore
-from rest_framework.response import Response # type: ignore
-from rest_framework.permissions import IsAuthenticated # type: ignore
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 from .models import NGO
 from .serializers import NGOSerializer
-from rest_framework import generics # type: ignore
 
-class NGOCreateView(APIView): # Day 8: List & Detail APIs implemented
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        serializer = NGOSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save(created_by=request.user)
-            return Response({
-                "message": "NGO created successfully",
-                "data": serializer.data
-            })
-
-        return Response(serializer.errors)
-    
-
-class NGOListView(generics.ListAPIView):
+# ✅ CREATE
+class NGOCreateView(generics.CreateAPIView):
+    queryset = NGO.objects.all()
     serializer_class = NGOSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        queryset = NGO.objects.filter(created_by=self.request.user)
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
 
-        # 🔍 SEARCH
-        search = self.request.query_params.get('search')
-        if search:
-            queryset = queryset.filter(name__icontains=search)
 
-        return queryset
-     
-class NGODetailView(APIView):
+# ✅ LIST + SEARCH + FILTER + PAGINATION
+class NGOListView(generics.ListAPIView):
+    queryset = NGO.objects.all()
+    serializer_class = NGOSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, pk):
-        try:
-            ngo = NGO.objects.get(pk=pk, created_by=request.user)
-        except NGO.DoesNotExist:
-            return Response({"error": "Not found"}, status=404)
+    # 🔥 FILTER + SEARCH
+    filterset_fields = ['name']
+    search_fields = ['name', 'description']
 
-        serializer = NGOSerializer(ngo)
-        return Response(serializer.data)
-    
-class NGOUpdateView(APIView):
+
+# ✅ UPDATE
+class NGOUpdateView(generics.UpdateAPIView):
+    queryset = NGO.objects.all()
+    serializer_class = NGOSerializer
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, pk):
-        try:
-            ngo = NGO.objects.get(pk=pk, created_by=request.user)
-        except NGO.DoesNotExist:
-            return Response({"error": "Not found"}, status=404)
 
-        serializer = NGOSerializer(ngo, data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-
-        return Response(serializer.errors)
-
-class NGODeleteView(APIView):
+# ✅ DELETE
+class NGODeleteView(generics.DestroyAPIView):
+    queryset = NGO.objects.all()
+    serializer_class = NGOSerializer
     permission_classes = [IsAuthenticated]
-
-    def delete(self, request, pk):
-        try:
-            ngo = NGO.objects.get(pk=pk, created_by=request.user)
-        except NGO.DoesNotExist:
-            return Response({"error": "Not found"}, status=404)
-
-        ngo.delete()
-        return Response({"message": "NGO deleted successfully"})
