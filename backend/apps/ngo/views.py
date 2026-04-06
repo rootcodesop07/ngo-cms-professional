@@ -3,6 +3,7 @@ from rest_framework.response import Response # type: ignore
 from rest_framework.permissions import IsAuthenticated # type: ignore
 from .models import NGO
 from .serializers import NGOSerializer
+from rest_framework import generics # type: ignore
 
 class NGOCreateView(APIView): # Day 8: List & Detail APIs implemented
     permission_classes = [IsAuthenticated]
@@ -20,14 +21,19 @@ class NGOCreateView(APIView): # Day 8: List & Detail APIs implemented
         return Response(serializer.errors)
     
 
-class NGOListView(APIView): # Day 9: Update & Delete APIs implemented
-     permission_classes = [IsAuthenticated]
+class NGOListView(generics.ListAPIView):
+    serializer_class = NGOSerializer
+    permission_classes = [IsAuthenticated]
 
-     def get(self, request):
-        ngos = NGO.objects.filter(created_by=request.user)
-        serializer = NGOSerializer(ngos, many=True)
+    def get_queryset(self):
+        queryset = NGO.objects.filter(created_by=self.request.user)
 
-        return Response(serializer.data)
+        # 🔍 SEARCH
+        search = self.request.query_params.get('search')
+        if search:
+            queryset = queryset.filter(name__icontains=search)
+
+        return queryset
      
 class NGODetailView(APIView):
     permission_classes = [IsAuthenticated]
