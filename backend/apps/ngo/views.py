@@ -7,7 +7,7 @@ from .serializers import NGOSerializer
 class NGOCreateView(generics.CreateAPIView):
     queryset = NGO.objects.all()
     serializer_class = NGOSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
