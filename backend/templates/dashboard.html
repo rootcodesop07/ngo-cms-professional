@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Dashboard - SaralJeevan</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #0f172a;
+            color: white;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            background: #1e293b;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        /* CONTAINER */
+        .container {
+            padding: 40px 20px;
+        }
+
+        /* STATS */
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat {
+            flex: 1;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        /* NGO GRID */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="nav-left">
+        <a href="/" class="logo">🌱 SaralJeevan</a>
+    </div>
+
+    <div class="nav-right">
+        <a href="/">Home</a>
+        <a href="/dashboard/">Dashboard</a>
+        <a href="#">Logout</a>
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="container">
+
+    <h2>Welcome, {{ request.user.username }}</h2>
+
+    <!-- STATS -->
+    <div class="stats">
+    <div class="stat">
+        <h2>{{ ngos|length }}</h2>
+        <p>Total NGOs</p>
+    </div>
+
+    <div class="stat">
+        <h2>₹0</h2>
+        <p>Total Donations</p>
+    </div>
+
+    <div class="stat">
+        <h2>0</h2>
+        <p>Total Events</p>
+    </div>
+</div>
+
+    <!-- NGO LIST -->
+    <h2>Your NGOs</h2>
+
+    <div class="grid">
+        {% for ngo in ngos %}
+            <div class="card">
+                <h3>{{ ngo.name }}</h3>
+                <p>{{ ngo.description }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+</body>
+</html>
