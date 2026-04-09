@@ -1,14 +1,7 @@
-from django.urls import path # type: ignore
-from .views import (
-    NGOCreateView,
-    NGOListView,
-    NGOUpdateView,
-    NGODeleteView
-)
+from django.urls import path
+from .views import NGOListCreateView, NGODetailView
 
 urlpatterns = [
-    path('', NGOListView.as_view()),
-    path('create/', NGOCreateView.as_view()),
-    path('<int:pk>/update/', NGOUpdateView.as_view()),
-    path('<int:pk>/delete/', NGODeleteView.as_view()),
+    path('', NGOListCreateView.as_view(), name='ngo-list-create'),
+    path('<int:pk>/', NGODetailView.as_view(), name='ngo-detail'),
 ]

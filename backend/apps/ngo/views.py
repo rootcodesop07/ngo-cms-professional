@@ -1,38 +1,22 @@
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, permissions, filters
 from .models import NGO
 from .serializers import NGOSerializer
+from .permissions import IsOwnerOrReadOnly
 
-# ✅ CREATE
-class NGOCreateView(generics.CreateAPIView):
+class NGOListCreateView(generics.ListCreateAPIView):
     queryset = NGO.objects.all()
     serializer_class = NGOSerializer
-    permission_classes = []
+    permission_classes = [permissions.IsAuthenticated]
+
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'description']
+    ordering_fields = ['id', 'name']
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
 
-# ✅ LIST + SEARCH + FILTER + PAGINATION
-class NGOListView(generics.ListAPIView):
+class NGODetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = NGO.objects.all()
     serializer_class = NGOSerializer
-    permission_classes = [IsAuthenticated]
-
-    # 🔥 FILTER + SEARCH
-    filterset_fields = ['name']
-    search_fields = ['name', 'description']
-
-
-# ✅ UPDATE
-class NGOUpdateView(generics.UpdateAPIView):
-    queryset = NGO.objects.all()
-    serializer_class = NGOSerializer
-    permission_classes = [IsAuthenticated]
-
-
-# ✅ DELETE
-class NGODeleteView(generics.DestroyAPIView):
-    queryset = NGO.objects.all()
-    serializer_class = NGOSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
