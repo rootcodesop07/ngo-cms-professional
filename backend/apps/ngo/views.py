@@ -5,7 +5,10 @@ from .permissions import IsOwnerOrReadOnly
 from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect
 from apps.ngo.models import NGO
+from django.contrib.auth import logout
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class NGOListCreateView(generics.ListCreateAPIView):
     queryset = NGO.objects.all()
@@ -58,3 +61,21 @@ def login_view(request):
 def dashboard(request):
     ngos = NGO.objects.all()
     return render(request, 'dashboard.html', {'ngos': ngos})
+
+
+def register_view(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+
+        User.objects.create_user(username=username, password=password)
+
+        return redirect('/login/')
+
+    return render(request, 'register.html')
+
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')
