@@ -108,12 +108,19 @@ body {
 <div class="navbar">
     <a href="/" class="logo">🌱 SaralJeevan</a>
 
-    <div class="nav-right">
-        <a href="/">Home</a>
-        <a href="/dashboard/">Dashboard</a>
-        <a href="/login/">Login</a>
-        <a href="/register/">Register</a>
-    </div>
+<div class="nav-right">
+
+{% if user.is_authenticated %}
+    <a href="/dashboard/">Dashboard</a>
+    <a href="/events/">Events</a>
+    <a href="/donate/">Donate</a>
+    <a href="/logout/">Logout</a>
+{% else %}
+    <a href="/login/">Login</a>
+    <a href="/register/">Register</a>
+{% endif %}
+
+</div>   
 </div>
 
 <div class="hero">
@@ -133,13 +140,13 @@ body {
     </div>
 
     <div class="card">
-        <img src="https://media.istockphoto.com/id/2199328882/photo/doctor-is-doing-an-injection-to-young-boy-nuwara-eliya-ceylon.jpg" />
+        <img src="https://media.istockphoto.com/id/1497811051/photo/doctor-examining-a-senior-adult-man-with-paralysis-during-a-home-visit-as-part-of-a-rural.jpg?s=612x612&w=0&k=20&c=ohfuuRLREmpGSe4sMJRG2TwDku_GRtEZ7dRiQtU8i6w=" />
         <h3>Healthcare</h3>
         <p>Providing medical support</p>
     </div>
 
     <div class="card">
-        <img src="https://media.istockphoto.com/id/1139776668/photo/generous-people-helping-to-poor-people.jpg" />
+        <img src="https://media.istockphoto.com/id/1223036866/photo/monks-of-ramakrishna-mission-donating-foods-during-lockdown-period.jpg?s=612x612&w=0&k=20&c=BYMOdUqSaeVoO5vQrjj5cu_d6dplk8rlaiA-RPIMcjk=" />
         <h3>Supplies</h3>
         <p>Providing essentials</p>
     </div>

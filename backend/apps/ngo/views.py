@@ -1,35 +1,12 @@
-from rest_framework import generics, permissions, filters
-from .models import NGO
-from .serializers import NGOSerializer
-from .permissions import IsOwnerOrReadOnly
-from django.contrib.auth import authenticate, login
-from django.shortcuts import redirect
-from apps.ngo.models import NGO
-from django.contrib.auth import logout
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class NGOListCreateView(generics.ListCreateAPIView):
-    queryset = NGO.objects.all()
-    serializer_class = NGOSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name', 'description']
-    ordering_fields = ['id', 'name']
-
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
-
-
-class NGODetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = NGO.objects.all()
-    serializer_class = NGOSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
-
-from django.shortcuts import render
-
+# HOME PAGE
 def home(request):
     from apps.ngo.models import NGO
 
@@ -43,26 +20,8 @@ def home(request):
         'event_count': event_count
     })
 
-def login_view(request):
-    if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
 
-        user = authenticate(request, username=username, password=password)
-
-        if user:
-            login(request, user)
-            return redirect('/dashboard/')
-        else:
-            return render(request, 'login.html', {'error': 'Invalid credentials'})
-
-    return render(request, 'login.html')
-
-def dashboard(request):
-    ngos = NGO.objects.all()
-    return render(request, 'dashboard.html', {'ngos': ngos})
-
-
+# REGISTER
 def register_view(request):
     if request.method == "POST":
         username = request.POST['username']
@@ -75,7 +34,34 @@ def register_view(request):
     return render(request, 'register.html')
 
 
+# LOGIN
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
 
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('/dashboard/')
+
+    return render(request, 'login.html')
+
+
+# LOGOUT
 def logout_view(request):
     logout(request)
     return redirect('/')
+
+
+# DASHBOARD
+@login_required(login_url='/login/')
+def dashboard_view(request):
+    from apps.ngo.models import NGO
+
+    ngos = NGO.objects.all()
+
+    return render(request, 'dashboard.html', {
+        'ngos': ngos
+    })

@@ -78,12 +78,19 @@
         <a href="/" class="logo">🌱 SaralJeevan</a>
     </div>
 
-    <div class="nav-right">
-        <a href="/">Home</a>
-        <a href="/dashboard/">Dashboard</a>
-        <a href="/login/">Login</a>
-        <a href="/register/">Register</a>
-    </div>
+<div class="nav-right">
+
+{% if user.is_authenticated %}
+    <a href="/dashboard/">Dashboard</a>
+    <a href="/events/">Events</a>
+    <a href="/donate/">Donate</a>
+    <a href="/logout/">Logout</a>
+{% else %}
+    <a href="/login/">Login</a>
+    <a href="/register/">Register</a>
+{% endif %}
+
+</div>
 </div>
 
 <!-- CONTENT -->
